@@ -1,9 +1,16 @@
+const User = require('../../models/User');
 const { updateUserPluginsService } = require('~/server/services/UserService');
 const { updateUserPluginAuth, deleteUserPluginAuth } = require('~/server/services/PluginService');
 const { logger } = require('~/config');
 
 const getUserController = async (req, res) => {
   res.status(200).send(req.user);
+};
+
+const getUsersController = async (req, res) => {
+  console.log('data before');
+  const data = (await User.find()) ?? [];
+  res.status(200).send(data);
 };
 
 const updateUserPluginsController = async (req, res) => {
@@ -55,5 +62,6 @@ const updateUserPluginsController = async (req, res) => {
 
 module.exports = {
   getUserController,
+  getUsersController,
   updateUserPluginsController,
 };
