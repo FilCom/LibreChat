@@ -73,6 +73,10 @@ export function getUser(): Promise<t.TUser> {
   return request.get(endpoints.user());
 }
 
+export function getUsers(): Promise<Array<t.TUser>> {
+  return request.get(endpoints.users());
+}
+
 export function getUserBalance(): Promise<string> {
   return request.get(endpoints.balance());
 }

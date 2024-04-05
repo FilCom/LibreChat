@@ -43,6 +43,18 @@ export const useGetUserQuery = (
   });
 };
 
+export const useGetUsersQuery = (
+  config?: UseQueryOptions<t.TUser[]>,
+): QueryObserverResult<t.TUser[]> => {
+  return useQuery<t.TUser[]>([QueryKeys.users], () => dataService.getUsers(), {
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    retry: false,
+    ...config,
+  });
+};
+
 export const useGetMessagesByConvoId = <TData = s.TMessage[]>(
   id: string,
   config?: UseQueryOptions<s.TMessage[], unknown, TData>,
