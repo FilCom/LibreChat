@@ -8,7 +8,6 @@ const getUserController = async (req, res) => {
 };
 
 const getUsersController = async (req, res) => {
-  console.log('data before');
   const data = (await User.find()) ?? [];
   res.status(200).send(data);
 };
