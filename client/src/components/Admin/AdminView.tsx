@@ -5,6 +5,7 @@ import * as Accordion from '@radix-ui/react-accordion';
 import { useListAssistantsQuery } from '~/data-provider';
 import { defaultOrderQuery } from 'librechat-data-provider';
 import { Crown, User } from 'lucide-react';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 function AdminView() {
   const { isAuthenticated } = useAuthContext();
@@ -30,7 +31,7 @@ function AdminView() {
               className="flex flex-col gap-2 rounded-2xl border border-gray-700 px-4 py-2"
               value={`item-${i}`}
             >
-              <Accordion.Trigger className="w-full text-left">
+              <Accordion.Trigger className="flex w-full justify-between gap-2 text-left">
                 <div className="flex items-center gap-4">
                   {user.role === 'ADMIN' ? (
                     <Crown color="orange" size={20} />
@@ -40,20 +41,29 @@ function AdminView() {
                   <span className="text-sm font-medium">{user.name}</span>
                   <span className="text-sm italic">{user.email}</span>
                 </div>
+                <ChevronDownIcon className="AccordionChevron" aria-hidden />
               </Accordion.Trigger>
               <Accordion.Content>
                 <form className="px-4">
-                  {assistants?.map((assistant, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id={`assistant-${i}`}
-                        name={`assistant-${i}`}
-                        defaultChecked={false}
-                      />
-                      <label htmlFor={`assistant-${i}`}>{assistant.name}</label>
-                    </div>
-                  ))}
+                  <div className="flex flex-col gap-3">
+                    {assistants?.map((assistant, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id={`assistant-${i}`}
+                          name={`assistant-${i}`}
+                          defaultChecked={false}
+                        />
+                        <label
+                          htmlFor={`assistant-${i}`}
+                          className="flex cursor-pointer flex-col leading-none"
+                        >
+                          <span>{assistant.name}</span>
+                          <span className="text-xs">{assistant.id}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                   <button
                     type="submit"
                     className="mt-2 rounded-md border border-gray-700 px-2 py-1.5 text-sm font-medium"
