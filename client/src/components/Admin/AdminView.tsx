@@ -1,4 +1,4 @@
-import { FormEvent, memo } from 'react';
+import { FormEvent, memo, useEffect } from 'react';
 import {
   useGetUsersQuery,
   useUpdateUserAssistantIdsMutation,
@@ -11,7 +11,14 @@ import { Crown, User } from 'lucide-react';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 function AdminView() {
-  const { isAuthenticated } = useAuthContext();
+  const { user, isAuthenticated } = useAuthContext();
+
+  useEffect(() => {
+    if (user && user.role !== 'ADMIN') {
+      window.location.replace('/c/new');
+    }
+  }, [user]);
+
   const { newConversation } = useNewConvo();
   const { data: users = null } = useGetUsersQuery({ enabled: !!isAuthenticated });
   const { data: assistants = null } = useListAssistantsQuery(defaultOrderQuery, {
@@ -45,10 +52,6 @@ function AdminView() {
     );
     return;
   }
-
-  console.log('newConversation', newConversation);
-  console.log('usersQuery', users);
-  console.log('assistants', assistants);
 
   return (
     <div className="mx-auto max-w-screen-lg px-5 py-5 text-white">
