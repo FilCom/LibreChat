@@ -5,12 +5,14 @@ import type { TPreset } from 'librechat-data-provider';
 import type { TModelSelectProps, Option } from '~/common';
 import { Label, HoverCard, SelectDropDown, HoverCardTrigger } from '~/components/ui';
 import { cn, defaultTextProps, removeFocusOutlines, mapAssistants } from '~/utils';
-import { useLocalize, useDebouncedInput } from '~/hooks';
+import { useLocalize, useDebouncedInput, useAuthContext } from '~/hooks';
 import { useListAssistantsQuery } from '~/data-provider';
 import OptionHover from './OptionHover';
 import { ESide } from '~/common';
 
 export default function Settings({ conversation, setOption, models, readonly }: TModelSelectProps) {
+  const { user } = useAuthContext();
+
   const localize = useLocalize();
   const defaultOption = useMemo(
     () => ({ label: localize('com_endpoint_use_active_assistant'), value: '' }),
@@ -21,10 +23,12 @@ export default function Settings({ conversation, setOption, models, readonly }: 
     select: (res) =>
       [
         defaultOption,
-        ...res.data.map(({ id, name }) => ({
-          label: name,
-          value: id,
-        })),
+        ...res.data
+          .map(({ id, name }) => ({
+            label: name,
+            value: id,
+          }))
+          .filter(({ value }) => user?.role === 'ADMIN' || user?.assistantIds.includes(value)),
       ].filter(Boolean),
   });
 
@@ -106,18 +110,20 @@ export default function Settings({ conversation, setOption, models, readonly }: 
 
   return (
     <div className="grid grid-cols-6 gap-6">
-      <div className="col-span-6 flex flex-col items-center justify-start gap-6 sm:col-span-3">
-        <div className="grid w-full items-center gap-2">
-          <SelectDropDown
-            value={model ?? ''}
-            setValue={setModel}
-            availableValues={modelOptions}
-            disabled={readonly}
-            className={cn(defaultTextProps, 'flex w-full resize-none', removeFocusOutlines)}
-            containerClassName="flex w-full resize-none"
-          />
+      {user?.role === 'ADMIN' && (
+        <div className="col-span-6 flex flex-col items-center justify-start gap-6 sm:col-span-3">
+          <div className="grid w-full items-center gap-2">
+            <SelectDropDown
+              value={model ?? ''}
+              setValue={setModel}
+              availableValues={modelOptions}
+              disabled={readonly}
+              className={cn(defaultTextProps, 'flex w-full resize-none', removeFocusOutlines)}
+              containerClassName="flex w-full resize-none"
+            />
+          </div>
         </div>
-      </div>
+      )}
       <div className="col-span-6 flex flex-col items-center justify-start gap-6 px-3 sm:col-span-3">
         <HoverCard openDelay={300}>
           <HoverCardTrigger className="grid w-full items-center gap-2">
@@ -136,42 +142,44 @@ export default function Settings({ conversation, setOption, models, readonly }: 
           <OptionHover endpoint={optionEndpoint ?? ''} type="temp" side={ESide.Left} />
         </HoverCard>
       </div>
-      <div className="col-span-6 flex flex-col items-center justify-start gap-6">
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="promptPrefix" className="text-left text-sm font-medium">
-            {localize('com_endpoint_prompt_prefix_assistants')}{' '}
-            <small className="opacity-40">({localize('com_endpoint_default_blank')})</small>
-          </Label>
-          <TextareaAutosize
-            id="promptPrefix"
-            disabled={readonly}
-            value={promptPrefixValue as string | undefined}
-            onChange={onPromptPrefixChange}
-            placeholder={localize('com_endpoint_prompt_prefix_assistants_placeholder')}
-            className={cn(
-              defaultTextProps,
-              'flex max-h-[240px] min-h-[80px] w-full resize-none px-3 py-2 ',
-            )}
-          />
+      {user?.role === 'ADMIN' && (
+        <div className="col-span-6 flex flex-col items-center justify-start gap-6">
+          <div className="grid w-full items-center gap-2">
+            <Label htmlFor="promptPrefix" className="text-left text-sm font-medium">
+              {localize('com_endpoint_prompt_prefix_assistants')}{' '}
+              <small className="opacity-40">({localize('com_endpoint_default_blank')})</small>
+            </Label>
+            <TextareaAutosize
+              id="promptPrefix"
+              disabled={readonly}
+              value={promptPrefixValue as string | undefined}
+              onChange={onPromptPrefixChange}
+              placeholder={localize('com_endpoint_prompt_prefix_assistants_placeholder')}
+              className={cn(
+                defaultTextProps,
+                'flex max-h-[240px] min-h-[80px] w-full resize-none px-3 py-2 ',
+              )}
+            />
+          </div>
+          <div className="grid w-full items-center gap-2">
+            <Label htmlFor="instructions" className="text-left text-sm font-medium">
+              {localize('com_endpoint_instructions_assistants')}{' '}
+              <small className="opacity-40">({localize('com_endpoint_default_blank')})</small>
+            </Label>
+            <TextareaAutosize
+              id="instructions"
+              disabled={readonly}
+              value={instructionsValue as string | undefined}
+              onChange={onInstructionsChange}
+              placeholder={localize('com_endpoint_instructions_assistants_placeholder')}
+              className={cn(
+                defaultTextProps,
+                'flex max-h-[240px] min-h-[80px] w-full resize-none px-3 py-2 ',
+              )}
+            />
+          </div>
         </div>
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="instructions" className="text-left text-sm font-medium">
-            {localize('com_endpoint_instructions_assistants')}{' '}
-            <small className="opacity-40">({localize('com_endpoint_default_blank')})</small>
-          </Label>
-          <TextareaAutosize
-            id="instructions"
-            disabled={readonly}
-            value={instructionsValue as string | undefined}
-            onChange={onInstructionsChange}
-            placeholder={localize('com_endpoint_instructions_assistants_placeholder')}
-            className={cn(
-              defaultTextProps,
-              'flex max-h-[240px] min-h-[80px] w-full resize-none px-3 py-2 ',
-            )}
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 }

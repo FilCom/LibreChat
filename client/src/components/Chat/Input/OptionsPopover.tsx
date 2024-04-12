@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Save } from 'lucide-react';
 import { Portal, Content } from '@radix-ui/react-popover';
 import type { ReactNode } from 'react';
-import { useLocalize, useOnClickOutside } from '~/hooks';
+import { useAuthContext, useLocalize, useOnClickOutside } from '~/hooks';
 import { cn, removeFocusOutlines } from '~/utils';
 import { CrossIcon } from '~/components/svg';
 import { Button } from '~/components/ui';
@@ -23,6 +23,7 @@ export default function OptionsPopover({
   closePopover,
   PopoverButtons,
 }: TOptionsPopoverProps) {
+  const { user } = useAuthContext();
   const popoverRef = useRef(null);
   useOnClickOutside(
     popoverRef,
@@ -61,14 +62,16 @@ export default function OptionsPopover({
             )}
           >
             <div className="flex w-full items-center bg-gray-50 px-2 py-2 dark:bg-gray-700">
-              <Button
-                type="button"
-                className="h-auto w-[150px] justify-start rounded-md border-2 border-gray-300/50 bg-transparent px-2 py-1 text-xs font-medium font-normal text-black hover:bg-gray-100 hover:text-black focus:ring-1 focus:ring-green-500/90 dark:border-gray-500/50 dark:bg-transparent dark:text-white dark:hover:bg-gray-600 dark:focus:ring-green-500"
-                onClick={saveAsPreset}
-              >
-                <Save className="mr-1 w-[14px]" />
-                {localize('com_endpoint_save_as_preset')}
-              </Button>
+              {user?.role === 'ADMIN' && (
+                <Button
+                  type="button"
+                  className="h-auto w-[150px] justify-start rounded-md border-2 border-gray-300/50 bg-transparent px-2 py-1 text-xs font-medium font-normal text-black hover:bg-gray-100 hover:text-black focus:ring-1 focus:ring-green-500/90 dark:border-gray-500/50 dark:bg-transparent dark:text-white dark:hover:bg-gray-600 dark:focus:ring-green-500"
+                  onClick={saveAsPreset}
+                >
+                  <Save className="mr-1 w-[14px]" />
+                  {localize('com_endpoint_save_as_preset')}
+                </Button>
+              )}
               {PopoverButtons}
               <Button
                 type="button"

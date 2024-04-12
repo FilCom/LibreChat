@@ -59,8 +59,25 @@ const updateUserPluginsController = async (req, res) => {
   }
 };
 
+const updateUserAssistantIdsController = async (req, res) => {
+  const { user } = req;
+  const { userId, assistantIds } = req.body;
+
+  // TODO: move this outside controller
+  if (user.role !== 'ADMIN') {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const updatedUser = await User.findOne({ _id: userId }).lean();
+  if (updatedUser) {
+    await User.updateOne({ _id: userId }, { assistantIds });
+  }
+  res.status(200).json({ message: 'ok' });
+};
+
 module.exports = {
   getUserController,
   getUsersController,
   updateUserPluginsController,
+  updateUserAssistantIdsController,
 };

@@ -81,6 +81,7 @@ export type TUser = {
   plugins: string[];
   createdAt: string;
   updatedAt: string;
+  assistantIds: string[];
 };
 
 export type TGetConversationsResponse = {
@@ -240,4 +241,9 @@ export type TCheckUserKeyResponse = {
 export type TRequestPasswordResetResponse = {
   link?: string;
   message?: string;
+};
+
+export type TUpdateUserAssistantIds = {
+  userId: string;
+  assistantIds: string[];
 };

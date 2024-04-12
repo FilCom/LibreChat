@@ -1,9 +1,12 @@
-import { memo } from 'react';
-import { useGetUsersQuery } from 'librechat-data-provider/react-query';
+import { FormEvent, memo } from 'react';
+import {
+  useGetUsersQuery,
+  useUpdateUserAssistantIdsMutation,
+} from 'librechat-data-provider/react-query';
 import { useAuthContext, useNewConvo } from '~/hooks';
 import * as Accordion from '@radix-ui/react-accordion';
 import { useListAssistantsQuery } from '~/data-provider';
-import { defaultOrderQuery } from 'librechat-data-provider';
+import { TUser, defaultOrderQuery } from 'librechat-data-provider';
 import { Crown, User } from 'lucide-react';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 
@@ -15,6 +18,33 @@ function AdminView() {
     select: (res) =>
       res.data.map(({ id, name, metadata, model }) => ({ id, name, metadata, model })),
   });
+  const updateUserAssistantIds = useUpdateUserAssistantIdsMutation();
+
+  function handleFormSubmit(e: FormEvent<HTMLFormElement>, user: TUser) {
+    e.preventDefault();
+    const checkboxes: NodeListOf<HTMLInputElement> =
+      e.currentTarget.querySelectorAll('[type="checkbox"]');
+    const assistantIds: string[] = [];
+    if (checkboxes.length) {
+      for (const checkbox of checkboxes) {
+        if (checkbox.checked) {
+          assistantIds.push(checkbox.value);
+        }
+      }
+    }
+    updateUserAssistantIds.mutate(
+      {
+        userId: user.id,
+        assistantIds,
+      },
+      {
+        onError: (error: unknown) => {
+          console.log(error);
+        },
+      },
+    );
+    return;
+  }
 
   console.log('newConversation', newConversation);
   console.log('usersQuery', users);
@@ -44,25 +74,28 @@ function AdminView() {
                 <ChevronDownIcon className="AccordionChevron" aria-hidden />
               </Accordion.Trigger>
               <Accordion.Content>
-                <form className="px-4">
+                <form onSubmit={(e) => handleFormSubmit(e, user)} className="px-4">
                   <div className="flex flex-col gap-3">
-                    {assistants?.map((assistant, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id={`assistant-${i}`}
-                          name={`assistant-${i}`}
-                          defaultChecked={false}
-                        />
-                        <label
-                          htmlFor={`assistant-${i}`}
-                          className="flex cursor-pointer flex-col leading-none"
-                        >
-                          <span>{assistant.name}</span>
-                          <span className="text-xs">{assistant.id}</span>
-                        </label>
-                      </div>
-                    ))}
+                    {assistants?.map(
+                      (assistant: { name: string | null; id: string }, i: number) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id={`assistant-${i}`}
+                            name={`assistant-${i}`}
+                            defaultChecked={user.assistantIds.includes(assistant.id)}
+                            value={assistant.id}
+                          />
+                          <label
+                            htmlFor={`assistant-${i}`}
+                            className="flex cursor-pointer flex-col leading-none"
+                          >
+                            <span>{assistant.name}</span>
+                            <span className="text-xs">{assistant.id}</span>
+                          </label>
+                        </div>
+                      ),
+                    )}
                   </div>
                   <button
                     type="submit"

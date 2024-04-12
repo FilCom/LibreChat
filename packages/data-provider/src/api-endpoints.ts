@@ -2,6 +2,8 @@ export const user = () => '/api/user';
 
 export const users = () => '/api/user/all';
 
+export const updateUserAssistantIds = () => '/api/user/update-assistant-ids';
+
 export const balance = () => '/api/balance';
 
 export const userPlugins = () => '/api/user/plugins';

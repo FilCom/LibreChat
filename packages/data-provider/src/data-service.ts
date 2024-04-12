@@ -295,3 +295,7 @@ export function updateConversation(
 export function genTitle(payload: m.TGenTitleRequest): Promise<m.TGenTitleResponse> {
   return request.post(endpoints.genTitle(), payload);
 }
+
+export const updateUserAssistantIds = (payload: t.TUpdateUserAssistantIds) => {
+  return request.post(endpoints.updateUserAssistantIds(), payload);
+};

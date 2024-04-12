@@ -416,3 +416,14 @@ export const useGetStartupConfig = (): QueryObserverResult<t.TStartupConfig> => 
     },
   );
 };
+
+export const useUpdateUserAssistantIdsMutation = (): UseMutationResult<
+  unknown,
+  unknown,
+  t.TUpdateUserAssistantIds,
+  unknown
+> => {
+  return useMutation((payload: t.TUpdateUserAssistantIds) =>
+    dataService.updateUserAssistantIds(payload),
+  );
+};
