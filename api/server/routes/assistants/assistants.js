@@ -148,6 +148,8 @@ router.delete('/:id', async (req, res) => {
  * @returns {AssistantListResponse} 200 - success response - application/json
  */
 router.get('/', async (req, res) => {
+  const { user } = req;
+
   try {
     const { limit = 100, order = 'desc', after, before } = req.query;
     const query = { limit, order, after, before };
@@ -171,6 +173,10 @@ router.get('/', async (req, res) => {
       } else if (excludedIds?.length) {
         body.data = body.data.filter((assistant) => !excludedIds.includes(assistant.id));
       }
+    }
+
+    if (user.role !== 'ADMIN') {
+      body.data = body.data.filter((assistant) => user.assistantIds.includes(assistant.id));
     }
 
     res.json(body);
