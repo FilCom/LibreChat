@@ -23,12 +23,10 @@ export default function Settings({ conversation, setOption, models, readonly }: 
     select: (res) =>
       [
         defaultOption,
-        ...res.data
-          .map(({ id, name }) => ({
-            label: name,
-            value: id,
-          }))
-          .filter(({ value }) => user?.role === 'ADMIN' || user?.assistantIds.includes(value)),
+        ...res.data.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
       ].filter(Boolean),
   });
 

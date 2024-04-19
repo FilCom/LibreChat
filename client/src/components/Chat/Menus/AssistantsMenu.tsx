@@ -10,8 +10,6 @@ import { Content, Portal, Root, Close } from '@radix-ui/react-popover';
 import { TitleButton } from './UI';
 
 export default function AssistantsMenu() {
-  const { user } = useAuthContext();
-
   const { conversation } = useChatContext();
   const { setOption } = useSetIndexOptions();
   const localize = useLocalize();
@@ -25,12 +23,10 @@ export default function AssistantsMenu() {
     select: (res) =>
       [
         defaultOption,
-        ...res.data
-          .map(({ id, name }) => ({
-            label: name,
-            value: id,
-          }))
-          .filter(({ value }) => user?.role === 'ADMIN' || user?.assistantIds.includes(value)),
+        ...res.data.map(({ id, name }) => ({
+          label: name,
+          value: id,
+        })),
       ].filter(Boolean),
   });
 
