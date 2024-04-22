@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Option } from '~/common';
-import { useAuthContext, useLocalize, useSetIndexOptions } from '~/hooks';
+import { useLocalize, useSetIndexOptions } from '~/hooks';
 import { useListAssistantsQuery } from '~/data-provider';
 import { mapAssistants } from '~/utils';
 import { defaultOrderQuery } from 'librechat-data-provider';
